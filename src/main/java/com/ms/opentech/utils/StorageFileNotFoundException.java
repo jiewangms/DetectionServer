@@ -1,4 +1,4 @@
-package com.ms.opentech.storage;
+package com.ms.opentech.utils;
 
 public class StorageFileNotFoundException extends StorageException {
 

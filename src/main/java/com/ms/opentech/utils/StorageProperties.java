@@ -1,4 +1,4 @@
-package com.ms.opentech.storage;
+package com.ms.opentech.utils;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

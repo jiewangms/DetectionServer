@@ -1,5 +1,9 @@
-package com.ms.opentech.storage;
+package com.ms.opentech.services;
 
+import com.ms.opentech.services.interfaces.StorageService;
+import com.ms.opentech.utils.StorageException;
+import com.ms.opentech.utils.StorageFileNotFoundException;
+import com.ms.opentech.utils.StorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -12,6 +16,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.stream.Stream;
 
 @Service
@@ -25,15 +30,18 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file) {
+    public Path store(MultipartFile file) {
+        Path targetPath;
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
             }
-            Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
+            targetPath = this.rootLocation.resolve(generateFileName(file.getOriginalFilename()));
+            Files.copy(file.getInputStream(), targetPath);
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
+        return targetPath;
     }
 
     @Override
@@ -83,5 +91,17 @@ public class FileSystemStorageService implements StorageService {
         } catch (IOException e) {
             throw new StorageException("Could not initialize storage", e);
         }
+    }
+
+    /**
+     * Generate a file name: originName+timestamp
+     * @param originName, origin name of file
+     * */
+    private static String generateFileName(final String originName) {
+        Date date = new Date();
+        int indexOfLastDot = originName.lastIndexOf('.');
+        String suffix = originName.substring(indexOfLastDot);
+        String prefix = originName.substring(0, indexOfLastDot);
+        return prefix + "_" + date.getTime() + suffix;
     }
 }

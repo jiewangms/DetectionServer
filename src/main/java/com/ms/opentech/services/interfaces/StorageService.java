@@ -1,4 +1,4 @@
-package com.ms.opentech.storage;
+package com.ms.opentech.services.interfaces;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +10,7 @@ public interface StorageService {
 
     void init();
 
-    void store(MultipartFile file);
+    Path store(MultipartFile file);
 
     Stream<Path> loadAll();
 
